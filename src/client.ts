@@ -3,7 +3,7 @@ import { Connection, WorkflowClient } from '@temporalio/client';
 import { example } from './workflows';
 import { nanoid } from 'nanoid';
 
-export default async function run() {
+export default async function run(param:string) {
   // Connect to the default Server location (localhost:7233)
   const connection = await Connection.connect();
   // In production, pass options to configure TLS and other settings:
@@ -19,10 +19,11 @@ export default async function run() {
 
   const handle = await client.start(example, {
     // type inference works! args: [name: string]
-    args: ['Temporal'],
+    args: [param],
     taskQueue: 'hello-world',
     // in practice, use a meaningful business id, eg customerId or transactionId
     workflowId: 'workflow-' + nanoid(),
+    /*cronSchedule: "0/15 * * * *", */
   });
   console.log(`Started workflow ${handle.workflowId}`);
 
@@ -30,8 +31,5 @@ export default async function run() {
   console.log(await handle.result()); // Hello, Temporal!
 }
 
-run().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+
 // @@@SNIPEND

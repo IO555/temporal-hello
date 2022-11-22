@@ -17,4 +17,4 @@ The Workflow should return:
 Hello, Temporal!
 ```
 
-run `npm run start-api` and don't run `npm run workflow` and POST to http://localhost:3000/api/start-workflow to start a workflow
+run `npm run start-api` and don't run `npm run workflow` and POST to http://localhost:8090/api/start to start a workflow
