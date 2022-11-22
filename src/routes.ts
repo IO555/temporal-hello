@@ -1,22 +1,22 @@
 import { Console } from 'console';
 import { Router } from 'express';
-import run from "./client";
+import { startWorkflow, startSubscriptionWorkflow, cancelSubscriptionWorkflow } from './client';
+import { cancelSubscription } from './workflows';
 
 const routes = Router();
 
 routes.post('/api/start', (req, res) => 
 {
     let param:string = req.body.param;
-    let result =  req.app.locals.needed;
-    startWorkflow(param);
-   return res.json({ message: result });
+    startSubscriptionWorkflow();
+    return res.json({ message: "Subscription started" });
 });
 
-const startWorkflow = (param:string) => {
-    run(param).catch((err) => {
-        console.error(err);
-        process.exit(1);
-      });
- };
+routes.post("/api/cancel", (req, res) => { 
+    cancelSubscriptionWorkflow();
+    return res.json({ message: "Subscription canceled" });
+});
+
+
 
 export default routes;

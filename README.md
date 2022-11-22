@@ -8,13 +8,13 @@ The [Hello World Tutorial](https://docs.temporal.io/typescript/hello-world/) wal
 
 1. Make sure Temporal Server is running locally (see the [quick install guide](https://docs.temporal.io/server/quick-install/)).
 1. `npm install` to install dependencies.
-1. `npm run start.watch` to start the Worker.
-1. In another shell, `npm run workflow` to run the Workflow Client.
 
-The Workflow should return:
+-------------------------------------------------------------------------------------------------------------
+run `npm run start.watch` to start the Worker.
+run `npm run start-api`  and POST to http://localhost:8090/api/start to start a workflow and http://localhost:8090/api/cancel to cancel it. 
+ https://learn.temporal.io/tutorials/typescript/subscriptions/ 
 
-```bash
-Hello, Temporal!
-```
+-------------------------------------------------------------------------------------------------------------
 
-run `npm run start-api` and don't run `npm run workflow` and POST to http://localhost:8090/api/start to start a workflow
+
+

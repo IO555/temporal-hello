@@ -2,6 +2,7 @@
 import { Connection, WorkflowClient } from '@temporalio/client';
 import { example } from './workflows';
 import { nanoid } from 'nanoid';
+import { SubscriptionWorkflow, cancelSubscription } from './workflows';
 
 export default async function run(param:string) {
   // Connect to the default Server location (localhost:7233)
@@ -30,6 +31,37 @@ export default async function run(param:string) {
   // optional: wait for client result
   console.log(await handle.result()); // Hello, Temporal!
 }
+
+  export function startWorkflow(param:string) {
+  run(param).catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+  };
+
+  export async function cancelSubscriptionWorkflow() {
+      const connection = await Connection.connect();
+      const client = new WorkflowClient({
+        connection,
+      });
+      const handle = client.getHandle('business-meaningful-id'); // match the Workflow id
+       await handle.signal(cancelSubscription);
+  }
+
+  export async function startSubscriptionWorkflow(){
+    const connection = await Connection.connect();
+      const client = new WorkflowClient({
+        connection,
+      });
+    const result = await client.execute(SubscriptionWorkflow, {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args: ['foo@bar.com', '30 seconds'],
+    });
+
+  }
+
+
 
 
 // @@@SNIPEND
