@@ -53,12 +53,11 @@ export default async function run(param:string) {
       const client = new WorkflowClient({
         connection,
       });
-    const result = await client.execute(SubscriptionWorkflow, {
+    const result = await client.start(SubscriptionWorkflow, {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
-      args: ['foo@bar.com', '30 seconds'],
+      args: ['foo@bar.com', '15 seconds'],
     });
-
   }
 
 
