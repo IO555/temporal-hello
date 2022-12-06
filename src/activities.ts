@@ -15,3 +15,7 @@ export async function sendSubscriptionOverEmail(email: string): Promise<void> {
 export async function sendCancelSubscriptionEmail(): Promise<void> {
   console.log(`Sending Subscription canceled email`);
 }
+
+export async function saveScheduleToDB(beginDate: string, endDate: string): Promise<void> {
+  console.log(`Saving schedule to DB begin: ` + beginDate + " end: " + endDate);
+}

@@ -5,6 +5,8 @@ import type * as activities from './activities';
 
 import * as wf from '@temporalio/workflow';
 
+import { saveScheduleToDB } from './activities';
+
 const { greet } = proxyActivities<typeof activities>({
   startToCloseTimeout: '1 minute',
 });
@@ -37,6 +39,16 @@ export async function SubscriptionWorkflow(
     await sendSubscriptionOverEmail(email);
   }
 }
+
+export async function scheduleWorkflow(
+  beginDate: string,
+  endDate: string
+) 
+{
+  await saveScheduleToDB(beginDate, endDate);
+}
+
+
 
 
 
