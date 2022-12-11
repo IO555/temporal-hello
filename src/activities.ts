@@ -1,4 +1,4 @@
-import { Client } from 'ts-postgres';
+import { Client } from "ts-postgres";
 
 // @@@SNIPSTART typescript-hello-activity
 export async function greet(name: string): Promise<string> {
@@ -18,22 +18,19 @@ export async function sendCancelSubscriptionEmail(): Promise<void> {
   console.log(`Sending Subscription canceled email`);
 }
 
-export async function saveScheduleToDB(beginDate: string, endDate: string): Promise<void> {
-  const client = new Client({"host": "127.0.0.1", "port": 54320, "user": "user", "password": "password", "database": "content"});
+export async function saveScheduleToDB(
+  beginDate: string,
+  endDate: string
+): Promise<void> {
+  const client = new Client({
+    host: "127.0.0.1",
+    port: 54320,
+    user: "user",
+    password: "password",
+    database: "content",
+  });
   await client.connect();
-  try {
-    // Querying the client returns a query result promise
-    // which is also an asynchronous result iterator.
-    const result = client.query(
-        "SELECT * FROM Schedule;"
-    );
-
-    for await (const row of result) {
-        console.log(row.data);
-    }
-} finally {
-    await client.end();
-}
   
-  //console.log(`Saving schedule to DB begin: ` + beginDate + " end: " + endDate);
+
+  console.log(`Saving schedule to DB begin: ` + beginDate + " end: " + endDate);
 }

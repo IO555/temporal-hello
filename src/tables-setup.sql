@@ -1,7 +1,7 @@
-CREATE TABLE ContentType(
-	ContentTypeID SERIAL NOT NULL,
-	ContentTypeName VARCHAR(255),
-	PRIMARY KEY (ContentTypeID)
+CREATE TABLE Content(
+	ContentID SERIAL NOT NULL,
+	ContentName VARCHAR(255),
+	PRIMARY KEY (ContentID)
 );
 CREATE TABLE Schedule(
     ScheduleID SERIAL NOT NULL,
@@ -9,13 +9,17 @@ CREATE TABLE Schedule(
     StartTime timestamp,
     EndTime timestamp,
     PRIMARY KEY (ScheduleID),
-    FOREIGN KEY (ContentID) REFERENCES ContentType(ContentTypeID) ON UPDATE CASCADE
+    FOREIGN KEY (ContentID) REFERENCES Content(ContentID) ON UPDATE CASCADE
 );
 
+CREATE PROCEDURE AddContent(c_ID INOUT INT, c_Name VARCHAR(255))
+LANGUAGE plpgsql AS
+$$ BEGIN
+INSERT INTO Content(ContentName)
+VALUES (c_Name) RETURNING ContentID INTO c_ID;
+END $$;
 
-SELECT * FROM Schedule AS S
-INNER JOIN ContentType
-ON S.ContentID = ContentType.ContentTypeId;
+CALL AddContent(NULL, 'Test Content');
 
 CREATE PROCEDURE AddSchedule(s_ID INOUT INT, c_ID INT ,  s_StartTime TimeStamp,  s_EndTime TimeStamp)
 LANGUAGE plpgsql AS
@@ -42,7 +46,7 @@ WHERE ScheduleID = s_ID;
 END $$
 
 
-CALL UpdateSchedule(1, 1, '2022-10-11 10:00:00', '2022-10-23 10:00:00');
+/*CALL UpdateSchedule(1, 1, '2022-10-11 10:00:00', '2022-10-23 10:00:00');*/
 
 CREATE PROCEDURE DeleteSchedule(s_ID int)
 
