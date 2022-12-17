@@ -7,26 +7,14 @@ import {
   cancelSubscriptionWorkflow,
 } from "./client";
 import { cancelSubscription, scheduleWorkflow } from "./workflows";
-import { Client, Query } from "ts-postgres";
+import {DBClient, DBConfig} from "./DBClient";
 
 const routes = Router();
 
-function CreateClient(): Client {
-  const client = new Client({
-    host: "localhost",
-    port: 54320,
-    user: "user",
-    password: "password",
-    database: "content",
-  });
-  return client;
+function CreateClient(): DBClient {
+  const config:DBConfig = new DBConfig("localhost",54320,"user","password","content");
+  return new DBClient(config);
 }
-
-function ReplacePlaceholders(str:string, ...params:any[]) {
-    for(const param of params)
-      str = str.replace("%", param);
-     return str;
-  }
 
 routes.post("/api/start", async function (req, res) {
   try {
@@ -53,87 +41,43 @@ routes.post("/api/publish", async function (req, res) {
 //API CRUD FUNCTIONS START HERE
 
 routes.get("/api/schedules", async function (req, res) {
-  const client = CreateClient();
-  try {
-    await client.connect();
-    const query = "SELECT * FROM GetAllSchedulesFunc();";
-    const result = client.query(query);
+  const client:DBClient = CreateClient();
+  const result = await client.GetAllSchedules();
+  return result == null ? res.json({ message: "No schedules found" }) : res.json(result.rows);
+});
 
-    for await (const row of result) {
-      console.log(row.data);
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.log(err);
-  } finally {
-    await client.end();
-  }
+routes.get("api/schedules:scheduleId", async function (req, res) {
+  //TODO: Implement this
 });
 
 routes.post("/api/schedules", async function (req, res) {
-  const client = CreateClient();
-  try {
+ 
     // Querying the client returns a query result promise
     // which is also an asynchronous result iterator.
     const startDate: string = req.body.startTime;
     const endDate: string = req.body.endTime;
     const contentId: string = req.body.contentId;
-    await client.connect();
-    const query:string = ReplacePlaceholders("CALL AddSchedule( null, '%', '%', '%');", contentId, startDate, endDate);
-    const result = client.query(query);
-
-    for await (const row of result) {
-      console.log(row.data);
-    }
-    return res.json(result.rows);
-  } catch (err) {
-    console.log(err);
-  } finally {
-    await client.end();
-  }
+    const client:DBClient = CreateClient();
+    const result = await client.AddSchedule(startDate, endDate, contentId);
+    console.log(result);
+    return result == null ? res.json("Could not add schedule") : res.json(result.rows);
 });
 
 routes.put("/api/schedules/:scheduleId", async function (req, res) {
-  const client = CreateClient();
-  try {
     const scheduleId: string = req.params.scheduleId;
     const startDate: string = req.body.startTime;
     const endDate: string = req.body.endTime;
     const contentId: string = req.body.contentId;
-    await client.connect();
-    const query = ReplacePlaceholders("CALL UpdateSchedule('%', '%', '%', '%');", scheduleId, contentId, startDate, endDate);
-    console.log(query);
-    const result = client.query(query);
-
-    for await (const row of result) {
-      console.log(row.data);
-    }
-    return res.json({ message: "Successfully updated a schedule" });
-  } catch (err) {
-    console.log(err);
-  } finally {
-    await client.end();
-  }
+    const client:DBClient = CreateClient();
+    const result = await client.UpdateSchedule(scheduleId,contentId, startDate, endDate);
+    return result == null ? res.json("Could not update schedule"): res.json(result.rows);
 });
 
 routes.delete("/api/schedules/:scheduleId", async function (req, res) {
-    const client = CreateClient();
-    try {
-      const scheduleId: string = req.params.scheduleId;
-      await client.connect();
-      const query = ReplacePlaceholders("CALL DeleteSchedule('%');", scheduleId);
-      console.log(query);
-      const result = client.query(query);
-  
-      for await (const row of result) {
-        console.log(row.data);
-      }
-      return res.json({ message: "Successfully deleted a schedule" });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      await client.end();
-    }
+    const scheduleId: string = req.params.scheduleId;
+    const client:DBClient = CreateClient();
+    const result = await client.DeleteSchedule(scheduleId);
+    return result == null ? res.json("Could not delete schedule"): res.json(result.rows);
   });
 
 export default routes;
