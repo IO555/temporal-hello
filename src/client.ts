@@ -2,7 +2,8 @@
 import { Connection, WorkflowClient } from '@temporalio/client';
 import { example } from './workflows';
 import { nanoid } from 'nanoid';
-import { SubscriptionWorkflow, cancelSubscription,scheduleWorkflow, getAllSchedulesWorkflow } from './workflows';
+import { SubscriptionWorkflow, cancelSubscription,scheduleWorkflow, getAllSchedulesWorkflow, 
+  updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow } from './workflows';
 import { ResultIterator } from 'ts-postgres';
 
 export default async function run(param:string) {
@@ -78,14 +79,49 @@ export default async function run(param:string) {
   export async function startGetAllSchedulesWorkflow():Promise<ResultIterator |null>{
     const connection = await Connection.connect();
     const client = new WorkflowClient({connection});
-    console.log("got to client");
     const handle = await client.start(getAllSchedulesWorkflow,  {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
       args:[],
     });
     const result = await handle.result();
-    console.log("result: " + result+ " We have a result @client");
+    return result;
+  }
+
+  export async function startUpdateScheduleWorkflow(id:string, beginDate:string, endDate:string, contentId:string):Promise<ResultIterator |null>{
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    const handle = await client.start(updateScheduleWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[id, beginDate, endDate, contentId],
+    });
+    const result = await handle.result();
+    return result;
+  }
+
+  export async function startDeleteScheduleWorkflow(id:string):Promise<ResultIterator |null>{
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    const handle = await client.start(deleteScheduleWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[id],
+    });
+    const result = await handle.result();
+    return result;
+  }
+
+  export async function startAddScheduleWorkflow(startDate:string, endDate:string, contentID:string)
+  {
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    const handle = await client.start(addScheduleWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[startDate, endDate, contentID],
+    });
+    const result = await handle.result();
     return result;
   }
 

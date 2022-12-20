@@ -40,3 +40,23 @@ export async function getAllSchedules(): Promise<ResultIterator |null> {
   console.log("got to activity getAllSchedules");
   return result;
 }
+
+export async function AddSchedule(startDate:string, endDate:string, contentId:string): Promise<ResultIterator |null>{
+  const client:DBClient = CreateClient();
+  const result = await client.AddSchedule(startDate, endDate, contentId);
+  return result;
+}
+
+export async function DeleteSchedule(scheduleId:string): Promise<ResultIterator |null>{
+  const client:DBClient = CreateClient();
+  const result = await client.DeleteSchedule(scheduleId);
+  return result;
+}
+
+export async function UpdateSchedule(scheduleId:string, startDate:string, endDate:string, contentId:string): Promise<ResultIterator |null>{
+  const client:DBClient = CreateClient();
+  const result = await client.UpdateSchedule(scheduleId, contentId, startDate, endDate );
+  return result;
+}
+
+

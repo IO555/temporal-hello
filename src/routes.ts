@@ -5,7 +5,10 @@ import {
   startScheduleWorkflow,
   startSubscriptionWorkflow,
   cancelSubscriptionWorkflow,
-  startGetAllSchedulesWorkflow
+  startGetAllSchedulesWorkflow,
+  startAddScheduleWorkflow,
+  startUpdateScheduleWorkflow,
+  startDeleteScheduleWorkflow
 } from "./client";
 import { cancelSubscription, scheduleWorkflow } from "./workflows";
 import {DBClient, DBConfig} from "./DBClient";
@@ -87,7 +90,30 @@ routes.delete("/api/schedules/:scheduleId", async function (req, res) {
 routes.get("/temporal-api/schedules", async function (req, res) {
    console.log("got to temporal-api/schedules");
    const result =  await startGetAllSchedulesWorkflow();
-   return res.json(result);
+   return res.json(result?.rows);
+});
+
+routes.post("/temporal-api/schedules", async function (req, res) {
+  const startDate: string = req.body.startTime;
+  const endDate: string = req.body.endTime;
+  const contentId: string = req.body.contentId;
+  const result = await startAddScheduleWorkflow(startDate, endDate, contentId);
+  return res.json(result);
+});
+
+routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
+  const scheduleId: string = req.params.scheduleId;
+  const startDate: string = req.body.startTime;
+  const endDate: string = req.body.endTime;
+  const contentId: string = req.body.contentId;
+  const result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
+  return res.json(result);
+});
+
+routes.delete("/temporal-api/schedules/:scheduleId", async function (req, res) {
+  const scheduleId: string = req.params.scheduleId;
+  const result = await startDeleteScheduleWorkflow(scheduleId);
+  return res.json(result);
 });
 
 export default routes;
