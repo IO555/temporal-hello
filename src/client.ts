@@ -2,7 +2,8 @@
 import { Connection, WorkflowClient } from '@temporalio/client';
 import { example } from './workflows';
 import { nanoid } from 'nanoid';
-import { SubscriptionWorkflow, cancelSubscription } from './workflows';
+import { SubscriptionWorkflow, cancelSubscription,scheduleWorkflow, getAllSchedulesWorkflow } from './workflows';
+import { ResultIterator } from 'ts-postgres';
 
 export default async function run(param:string) {
   // Connect to the default Server location (localhost:7233)
@@ -58,6 +59,34 @@ export default async function run(param:string) {
       taskQueue: 'tutorial',
       args: ['foo@bar.com', '15 seconds'],
     });
+  }
+  export async function startScheduleWorkflow(beginDate:string, endDate:string):Promise<string>{
+    const connection = await Connection.connect();
+      const client = new WorkflowClient({
+        connection,
+      });
+    const handle = await client.start(scheduleWorkflow, {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args: [beginDate, endDate],
+    });
+    const result = await handle.result();
+    console.log("result: " + result+ " We have a result @client");
+    return result;
+  }
+
+  export async function startGetAllSchedulesWorkflow():Promise<ResultIterator |null>{
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    console.log("got to client");
+    const handle = await client.start(getAllSchedulesWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[],
+    });
+    const result = await handle.result();
+    console.log("result: " + result+ " We have a result @client");
+    return result;
   }
 
 

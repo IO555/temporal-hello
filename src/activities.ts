@@ -1,4 +1,5 @@
-import { Client } from "ts-postgres";
+import { Client, ResultIterator } from "ts-postgres";
+import {DBClient, DBConfig} from "./DBClient";
 
 // @@@SNIPSTART typescript-hello-activity
 export async function greet(name: string): Promise<string> {
@@ -21,16 +22,21 @@ export async function sendCancelSubscriptionEmail(): Promise<void> {
 export async function saveScheduleToDB(
   beginDate: string,
   endDate: string
-): Promise<void> {
-  const client = new Client({
-    host: "127.0.0.1",
-    port: 54320,
-    user: "user",
-    password: "password",
-    database: "content",
-  });
-  await client.connect();
+): Promise<string> {
   
-
+  //demo function that returns OK
   console.log(`Saving schedule to DB begin: ` + beginDate + " end: " + endDate);
+  return "OK";
+}
+
+function CreateClient(): DBClient {
+  const config:DBConfig = new DBConfig("localhost",54320,"user","password","content");
+  return new DBClient(config);
+}
+
+export async function getAllSchedules(): Promise<ResultIterator |null> {
+  const client:DBClient = CreateClient();
+  const result = await client.GetAllSchedules();
+  console.log("got to activity getAllSchedules");
+  return result;
 }

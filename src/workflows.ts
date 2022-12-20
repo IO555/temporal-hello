@@ -5,7 +5,8 @@ import type * as activities from './activities';
 
 import * as wf from '@temporalio/workflow';
 
-import { saveScheduleToDB } from './activities';
+//import type { saveScheduleToDB, getAllSchedules } from './activities';
+import { ResultIterator } from 'ts-postgres';
 
 const { greet } = proxyActivities<typeof activities>({
   startToCloseTimeout: '1 minute',
@@ -21,6 +22,8 @@ const { sendWelcomeEmail, sendSubscriptionOverEmail, sendCancelSubscriptionEmail
   typeof activities>({
   startToCloseTimeout: '1 minute',
 });
+
+const { saveScheduleToDB, getAllSchedules} = proxyActivities<typeof activities>({startToCloseTimeout: '10 seconds'});
 
 export const cancelSubscription = wf.defineSignal('cancelSignal');
 
@@ -43,9 +46,15 @@ export async function SubscriptionWorkflow(
 export async function scheduleWorkflow(
   beginDate: string,
   endDate: string
-) 
+): Promise<string> 
 {
-  await saveScheduleToDB(beginDate, endDate);
+    const result = await saveScheduleToDB(beginDate, endDate);
+    return result;
+}
+
+export async function getAllSchedulesWorkflow():Promise<ResultIterator | null>
+{
+  return await getAllSchedules();
 }
 
 

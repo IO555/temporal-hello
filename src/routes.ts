@@ -2,9 +2,10 @@
 import { Router } from "express";
 import { nextTick } from "process";
 import {
-  startWorkflow,
+  startScheduleWorkflow,
   startSubscriptionWorkflow,
   cancelSubscriptionWorkflow,
+  startGetAllSchedulesWorkflow
 } from "./client";
 import { cancelSubscription, scheduleWorkflow } from "./workflows";
 import {DBClient, DBConfig} from "./DBClient";
@@ -15,6 +16,8 @@ function CreateClient(): DBClient {
   const config:DBConfig = new DBConfig("localhost",54320,"user","password","content");
   return new DBClient(config);
 }
+
+//simple demo routes to start workflows start here
 
 routes.post("/api/start", async function (req, res) {
   try {
@@ -34,7 +37,7 @@ routes.post("/api/cancel", async function (req, res) {
 routes.post("/api/publish", async function (req, res) {
   const startDate: string = req.body.startTime;
   const endDate: string = req.body.endTime;
-  await scheduleWorkflow(startDate, endDate);
+  await startScheduleWorkflow(startDate, endDate);
   return res.json({ message: "Schedule published" });
 });
 
@@ -79,5 +82,12 @@ routes.delete("/api/schedules/:scheduleId", async function (req, res) {
     const result = await client.DeleteSchedule(scheduleId);
     return result == null ? res.json("Could not delete schedule"): res.json(result.rows);
   });
+
+//routes that use temporal to do crud operations start here
+routes.get("/temporal-api/schedules", async function (req, res) {
+   console.log("got to temporal-api/schedules");
+   const result =  await startGetAllSchedulesWorkflow();
+   return res.json(result);
+});
 
 export default routes;
