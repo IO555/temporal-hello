@@ -59,9 +59,16 @@ routes.get("/api/schedules", async function (req, res) {
   return res.json(schedules);
 });
 
-routes.get("api/schedules:scheduleId", async function (req, res) {
+routes.get("/api/schedules/:id", async function (req, res) {
   //TODO: Implement this
-
+  const client:DBClient = CreateClient();
+  const result = await client.GetScheduleById(req.params.id);
+  if(result == null)
+  {
+    return res.status(404).json({ message: "No schedules found" });
+  }
+  const obj = convertRow(result.rows[0]);
+  return res.json(obj);
   //on error return HTTPSTATUS: NOT FOUND
 });
 
@@ -78,7 +85,7 @@ routes.post("/api/schedules", async function (req, res) {
     const contentId: string = req.body.contentId;
     const client:DBClient = CreateClient();
     const result = await client.AddSchedule(startDate, endDate, contentId);
-    return result == null ? res.json("Could not add schedule") : res.status(201);
+    return result == null ? res.status(409).json("Could not add schedule") : res.status(201).send();
 });
 
 routes.put("/api/schedules/:scheduleId", async function (req, res) {
@@ -91,17 +98,29 @@ routes.put("/api/schedules/:scheduleId", async function (req, res) {
     const endDate: string = req.body.endTime;
     const contentId: string = req.body.contentId;
     
-    const client:DBClient = CreateClient();
+    let client:DBClient = CreateClient();
+    const exists = await client.GetScheduleById(scheduleId);
+    if(exists == null)
+    {
+      return res.status(404).send("Schedule does not exist");
+    }
+    client = CreateClient();
     const result = await client.UpdateSchedule(scheduleId,contentId, startDate, endDate);
-    console.log(' result');
-    return result == null ? res.status(404).json("Could not update schedule"): res.status(204).json("Updated schedule");
+    
+    return result == null ? res.status(404).send("Could not update"): res.status(204).send("Updated successfully");
 });
 
 routes.delete("/api/schedules/:scheduleId", async function (req, res) {
     const scheduleId: string = req.params.scheduleId;
-    const client:DBClient = CreateClient();
+    let client:DBClient = CreateClient();
+    const exists = await client.GetScheduleById(scheduleId);
+    if(exists == null)
+    {
+      return res.status(404).send("Schedule does not exist");
+    }
+    client = CreateClient();
     const result = await client.DeleteSchedule(scheduleId);
-    return result == null ? res.status(404).json("Could not delete schedule"): res.status(204);
+    return result == null ? res.status(404).send("Could not delete schedule"): res.status(204).send("Deleted successfully");
   });
 
 //routes that use temporal to do CRUD operations start here
@@ -122,7 +141,7 @@ routes.post("/temporal-api/schedules", async function (req, res) {
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
   const result = await startAddScheduleWorkflow(startDate, endDate, contentId);
-  return result == null ? res.json("Could not add schedule"): res.status(201).json(result);
+  return result == null ? res.status(409).send("Could not add schedule"): res.status(201).send("Succefssfully added");
 });
 
 routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
@@ -135,13 +154,14 @@ routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
   const result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
-  return result == null? res.status(404).json("Could not update"): res.status(204).json("Updated");
+  return result == null? res.status(404).send("Could not update"): res.status(204).send("Updated");
+  //TODO test these with postman
 });
 
 routes.delete("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const scheduleId: string = req.params.scheduleId;
   const result = await startDeleteScheduleWorkflow(scheduleId);
-  return result == null ? res.status(404).json("Could not delete"): res.status(204).json("Deleted");
+  return result == null ? res.status(404).send("Could not delete"): res.status(204).send("Deleted");
 });
 
 export default routes;

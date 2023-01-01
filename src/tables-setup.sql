@@ -67,6 +67,15 @@ RETURN QUERY SELECT * FROM Schedule;
 
 end;$$
 
+CREATE OR REPLACE FUNCTION GetScheduleByIdFunc(s_ID int) RETURNS TABLE(sch_ID int, ContentID int, StartTime timestamp,
+                                                         EndTime timestamp)
+language plpgsql
+as $$
+begin
+RETURN QUERY SELECT * FROM schedule WHERE scheduleID = s_ID;
+
+end;$$
+
 
 
 
