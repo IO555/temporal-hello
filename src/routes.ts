@@ -2,6 +2,7 @@
 import { Router } from "express";
 import { nextTick } from "process";
 import { validateDate } from "./validate-params";
+import { convertRow, convertRows } from "./dataTypeConverter";
 import {
   startScheduleWorkflow,
   startSubscriptionWorkflow,
@@ -50,7 +51,13 @@ routes.post("/api/publish", async function (req, res) {
 routes.get("/api/schedules", async function (req, res) {
   const client:DBClient = CreateClient();
   const result = await client.GetAllSchedules();
-  return result == null ? res.status(404).json({ message: "No schedules found" }) : res.json(result.rows);
+  if(result == null)
+  {
+    return res.status(404).json({ message: "No schedules found" });
+  }
+  const schedules = convertRows(result.rows);
+  
+  return res.json(schedules);
 });
 
 routes.get("api/schedules:scheduleId", async function (req, res) {
@@ -134,3 +141,5 @@ routes.delete("/temporal-api/schedules/:scheduleId", async function (req, res) {
 });
 
 export default routes;
+
+
