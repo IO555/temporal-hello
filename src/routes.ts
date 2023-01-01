@@ -56,7 +56,6 @@ routes.get("/api/schedules", async function (req, res) {
     return res.status(404).json({ message: "No schedules found" });
   }
   const schedules = convertRows(result.rows);
-  
   return res.json(schedules);
 });
 
@@ -79,7 +78,7 @@ routes.post("/api/schedules", async function (req, res) {
     const contentId: string = req.body.contentId;
     const client:DBClient = CreateClient();
     const result = await client.AddSchedule(startDate, endDate, contentId);
-    return result == null ? res.json("Could not add schedule") : res.status(201).json(result);
+    return result == null ? res.json("Could not add schedule") : res.status(201);
 });
 
 routes.put("/api/schedules/:scheduleId", async function (req, res) {
@@ -91,9 +90,11 @@ routes.put("/api/schedules/:scheduleId", async function (req, res) {
     const startDate: string = req.body.startTime;
     const endDate: string = req.body.endTime;
     const contentId: string = req.body.contentId;
+    
     const client:DBClient = CreateClient();
     const result = await client.UpdateSchedule(scheduleId,contentId, startDate, endDate);
-    return result == null ? res.status(404).json("Could not update schedule"): res.status(204);
+    console.log(' result');
+    return result == null ? res.status(404).json("Could not update schedule"): res.status(204).json("Updated schedule");
 });
 
 routes.delete("/api/schedules/:scheduleId", async function (req, res) {
@@ -106,7 +107,10 @@ routes.delete("/api/schedules/:scheduleId", async function (req, res) {
 //routes that use temporal to do CRUD operations start here
 routes.get("/temporal-api/schedules", async function (req, res) {
    const result =  await startGetAllSchedulesWorkflow();
-   return res.json(result?.rows);
+   if(result == null)
+      return res.status(404).json({ message: "No schedules found" });
+   const schedules = convertRows(result.rows);
+   return res.json(schedules);
 });
 
 routes.post("/temporal-api/schedules", async function (req, res) {
@@ -131,13 +135,13 @@ routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
   const result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
-  return result == null? res.status(404).json("Could not update"): res.status(204);
+  return result == null? res.status(404).json("Could not update"): res.status(204).json("Updated");
 });
 
 routes.delete("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const scheduleId: string = req.params.scheduleId;
   const result = await startDeleteScheduleWorkflow(scheduleId);
-  return result == null ? res.status(404).json("Could not delete"): res.status(204);
+  return result == null ? res.status(404).json("Could not delete"): res.status(204).json("Deleted");
 });
 
 export default routes;
