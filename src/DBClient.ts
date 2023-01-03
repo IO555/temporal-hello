@@ -56,7 +56,7 @@ export class DBClient {
     let result = null;
     try {
       const query: string = this.ReplacePlaceholders(
-        "CALL UpdateSchedule('%', '%', '%', '%');",
+        "CALL UpdateSchedule('%', '%', '%', '%', null);",
         scheduleId,
         contentId,
         startDate,
@@ -80,7 +80,7 @@ export class DBClient {
     let result = null;
     try {
       const query: string = this.ReplacePlaceholders(
-        "CALL DeleteSchedule('%');",
+        "CALL DeleteSchedule('%', null);",
         scheduleId
       );
       result = await this.client.query(query);

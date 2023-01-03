@@ -98,28 +98,27 @@ routes.put("/api/schedules/:scheduleId", async function (req, res) {
     const endDate: string = req.body.endTime;
     const contentId: string = req.body.contentId;
     
-    let client:DBClient = CreateClient();
-    const exists = await client.GetScheduleById(scheduleId);
-    if(exists == null)
+    const client:DBClient = CreateClient();
+    
+    const result = await client.UpdateSchedule(scheduleId,contentId, startDate, endDate);
+    
+    console.log(result?.rows[0][0]);
+    if(result?.rows[0][0] == 0)
     {
       return res.status(404).send("Schedule does not exist");
     }
-    client = CreateClient();
-    const result = await client.UpdateSchedule(scheduleId,contentId, startDate, endDate);
     
     return result == null ? res.status(404).send("Could not update"): res.status(204).send("Updated successfully");
 });
 
 routes.delete("/api/schedules/:scheduleId", async function (req, res) {
     const scheduleId: string = req.params.scheduleId;
-    let client:DBClient = CreateClient();
-    const exists = await client.GetScheduleById(scheduleId);
-    if(exists == null)
+    const client:DBClient = CreateClient();
+    const result = await client.DeleteSchedule(scheduleId);
+    if(result?.rows[0][0] == 0)
     {
       return res.status(404).send("Schedule does not exist");
     }
-    client = CreateClient();
-    const result = await client.DeleteSchedule(scheduleId);
     return result == null ? res.status(404).send("Could not delete schedule"): res.status(204).send("Deleted successfully");
   });
 
