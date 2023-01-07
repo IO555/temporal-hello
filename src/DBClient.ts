@@ -1,4 +1,4 @@
-import { Client, Query, Configuration, ResultIterator } from "ts-postgres";
+import { Client, Configuration, ResultIterator } from "ts-postgres";
 //import { ResultIterator } from "ts-postgres/dist/src/result";
 
 export class DBClient {
