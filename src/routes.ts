@@ -1,6 +1,8 @@
 
 import { Router } from "express";
 import { nextTick } from "process";
+import { validateDate } from "./validate-params";
+import { convertRow, convertRows } from "./dataTypeConverter";
 import {
   startScheduleWorkflow,
   startSubscriptionWorkflow,
@@ -49,71 +51,118 @@ routes.post("/api/publish", async function (req, res) {
 routes.get("/api/schedules", async function (req, res) {
   const client:DBClient = CreateClient();
   const result = await client.GetAllSchedules();
-  return result == null ? res.json({ message: "No schedules found" }) : res.json(result.rows);
+  if(result == null)
+  {
+    return res.status(404).json({ message: "No schedules found" });
+  }
+  const schedules = convertRows(result.rows);
+  return res.json(schedules);
 });
 
-routes.get("api/schedules:scheduleId", async function (req, res) {
+routes.get("/api/schedules/:id", async function (req, res) {
   //TODO: Implement this
+  const client:DBClient = CreateClient();
+  const result = await client.GetScheduleById(req.params.id);
+  if(result == null)
+  {
+    return res.status(404).json({ message: "No schedules found" });
+  }
+  const obj = convertRow(result.rows[0]);
+  return res.json(obj);
+  //on error return HTTPSTATUS: NOT FOUND
 });
 
 routes.post("/api/schedules", async function (req, res) {
  
     // Querying the client returns a query result promise
     // which is also an asynchronous result iterator.
+    const isValid = validateDate(req.body.startTime) && validateDate(req.body.endTime);
+    if(!isValid){
+        return res.status(400).json("Invalid date format, use this 2022-01-01 00:00:00");
+    }
     const startDate: string = req.body.startTime;
     const endDate: string = req.body.endTime;
     const contentId: string = req.body.contentId;
     const client:DBClient = CreateClient();
     const result = await client.AddSchedule(startDate, endDate, contentId);
-    console.log(result);
-    return result == null ? res.json("Could not add schedule") : res.json(result.rows);
+    return result == null ? res.status(409).json("Could not add schedule") : res.status(201).send();
 });
 
 routes.put("/api/schedules/:scheduleId", async function (req, res) {
+    const isValid = validateDate(req.body.startTime) && validateDate(req.body.endTime);
+    if(!isValid){
+        return res.status(400).json("Invalid date format, use this 2022-01-01 00:00:00");
+    }
     const scheduleId: string = req.params.scheduleId;
     const startDate: string = req.body.startTime;
     const endDate: string = req.body.endTime;
     const contentId: string = req.body.contentId;
+    
     const client:DBClient = CreateClient();
+    
     const result = await client.UpdateSchedule(scheduleId,contentId, startDate, endDate);
-    return result == null ? res.json("Could not update schedule"): res.json(result.rows);
+    
+    console.log(result?.rows[0][0]);
+    if(result?.rows[0][0] == 0)
+    {
+      return res.status(404).send("Schedule does not exist");
+    }
+    
+    return result == null ? res.status(404).send("Could not update"): res.status(204).send("Updated successfully");
 });
 
 routes.delete("/api/schedules/:scheduleId", async function (req, res) {
     const scheduleId: string = req.params.scheduleId;
     const client:DBClient = CreateClient();
     const result = await client.DeleteSchedule(scheduleId);
-    return result == null ? res.json("Could not delete schedule"): res.json(result.rows);
+    if(result?.rows[0][0] == 0)
+    {
+      return res.status(404).send("Schedule does not exist");
+    }
+    return result == null ? res.status(404).send("Could not delete schedule"): res.status(204).send("Deleted successfully");
   });
 
-//routes that use temporal to do crud operations start here
+//routes that use temporal to do CRUD operations start here
 routes.get("/temporal-api/schedules", async function (req, res) {
-   console.log("got to temporal-api/schedules");
    const result =  await startGetAllSchedulesWorkflow();
-   return res.json(result?.rows);
+   if(result == null)
+      return res.status(404).json({ message: "No schedules found" });
+   const schedules = convertRows(result.rows);
+   return res.json(schedules);
 });
 
 routes.post("/temporal-api/schedules", async function (req, res) {
+  const isValid = validateDate(req.body.startTime) && validateDate(req.body.endTime);
+    if(!isValid){
+        return res.status(400).json("Invalid date format, use this 2022-01-01 00:00:00");
+    }
   const startDate: string = req.body.startTime;
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
   const result = await startAddScheduleWorkflow(startDate, endDate, contentId);
-  return res.json(result);
+  return result == null ? res.status(409).send("Could not add schedule"): res.status(201).send("Succefssfully added");
 });
 
 routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
+  const isValid = validateDate(req.body.startTime) && validateDate(req.body.endTime);
+    if(!isValid){
+        return res.status(400).json("Invalid date format, use this 2022-01-01 00:00:00");
+    }
   const scheduleId: string = req.params.scheduleId;
   const startDate: string = req.body.startTime;
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
   const result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
-  return res.json(result);
+  return result == null? res.status(404).send("Could not update"): res.status(204).send("Updated");
+  //TODO test these with postman
 });
 
 routes.delete("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const scheduleId: string = req.params.scheduleId;
   const result = await startDeleteScheduleWorkflow(scheduleId);
-  return res.json(result);
+  return result == null ? res.status(404).send("Could not delete"): res.status(204).send("Deleted");
 });
 
 export default routes;
+
+

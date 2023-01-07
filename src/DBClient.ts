@@ -39,7 +39,7 @@ export class DBClient {
       result = await this.client.query(query);
     } catch (error) {
       console.log(error);
-      return result;
+      return null;
     } finally {
       await this.client.end();
     }
@@ -56,7 +56,7 @@ export class DBClient {
     let result = null;
     try {
       const query: string = this.ReplacePlaceholders(
-        "CALL UpdateSchedule('%', '%', '%', '%');",
+        "CALL UpdateSchedule('%', '%', '%', '%', null);",
         scheduleId,
         contentId,
         startDate,
@@ -65,10 +65,11 @@ export class DBClient {
       result = await this.client.query(query);
     } catch (error) {
       console.log(error);
-      return result;
+      return null;
     } finally {
       await this.client.end();
     }
+    
     return result;
   }
   
@@ -79,7 +80,7 @@ export class DBClient {
     let result = null;
     try {
       const query: string = this.ReplacePlaceholders(
-        "CALL DeleteSchedule('%');",
+        "CALL DeleteSchedule('%', null);",
         scheduleId
       );
       result = await this.client.query(query);
@@ -93,7 +94,25 @@ export class DBClient {
   }
 
   public async GetScheduleById(id: string) {
-    //TODO: Implement this
+    const query = this.ReplacePlaceholders("SELECT * FROM GetScheduleByIdFunc(%);", id);
+    let result = null;
+    try{
+      await this.client.connect();
+       result = await this.client.query(query);
+       //console.log(result);
+    }
+    catch(error){
+      console.log(error);
+      return null;
+    }
+    finally{
+      await this.client.end();
+    }
+    if(result.status == 'SELECT 0')
+    {
+      return null;
+    }
+    return result;
   }
 
   private ReplacePlaceholders(str: string, ...params: any[]) {

@@ -11,8 +11,11 @@ The [Hello World Tutorial](https://docs.temporal.io/typescript/hello-world/) wal
 
 -------------------------------------------------------------------------------------------------------------
 run `npm run start.watch` to start the Worker.
-run `npm run start-api`  and POST to http://localhost:8090/api/start to start a workflow and http://localhost:8090/api/cancel to cancel it. 
+run `npm run start-api`  and check the api-postman.json
+
  https://learn.temporal.io/tutorials/typescript/subscriptions/ 
+
+ Create a database named "content" and add the tables-setup.sql tables and procedures..
 
 -------------------------------------------------------------------------------------------------------------
 
