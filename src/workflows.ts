@@ -23,7 +23,7 @@ const { sendWelcomeEmail, sendSubscriptionOverEmail, sendCancelSubscriptionEmail
   startToCloseTimeout: '1 minute',
 });
 
-const { saveScheduleToDB, getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule} = proxyActivities<typeof activities>({startToCloseTimeout: '10 seconds'});
+const { saveScheduleToDB, getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule, GetScheduleById, GetScheduleByContentId} = proxyActivities<typeof activities>({startToCloseTimeout: '10 seconds'});
 
 export const cancelSubscription = wf.defineSignal('cancelSignal');
 
@@ -70,6 +70,16 @@ export async function deleteScheduleWorkflow(scheduleId:string):Promise<ResultIt
 export async function updateScheduleWorkflow(scheduleId:string, startDate:string, endDate:string, contentId:string):Promise<ResultIterator | null>
 {
   return await UpdateSchedule(scheduleId, startDate, endDate, contentId);
+}
+
+export async function GetScheduleByContentIdWorkflow(contentId:string):Promise<ResultIterator | null>
+{
+  return await GetScheduleByContentId(contentId);
+}
+
+export async function GetScheduleByIdWorkflow(scheduleId:string):Promise<ResultIterator | null>
+{
+  return await GetScheduleById(scheduleId);
 }
 
 

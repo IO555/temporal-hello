@@ -3,7 +3,7 @@ import { Connection, WorkflowClient } from '@temporalio/client';
 import { example } from './workflows';
 import { nanoid } from 'nanoid';
 import { SubscriptionWorkflow, cancelSubscription,scheduleWorkflow, getAllSchedulesWorkflow, 
-  updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow } from './workflows';
+  updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow, GetScheduleByIdWorkflow } from './workflows';
 import { ResultIterator } from 'ts-postgres';
 
 export default async function run(param:string) {
@@ -75,7 +75,17 @@ export default async function run(param:string) {
     console.log("result: " + result+ " We have a result @client");
     return result;
   }
-
+  export async function startGetScheduleByIdWorkflow(id:string):Promise<ResultIterator |null>{
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    const handle = await client.start(GetScheduleByIdWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[id]
+  });
+    const result = await handle.result();
+    return result;
+}
   export async function startGetAllSchedulesWorkflow():Promise<ResultIterator |null>{
     const connection = await Connection.connect();
     const client = new WorkflowClient({connection});

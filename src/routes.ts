@@ -10,7 +10,8 @@ import {
   startGetAllSchedulesWorkflow,
   startAddScheduleWorkflow,
   startUpdateScheduleWorkflow,
-  startDeleteScheduleWorkflow
+  startDeleteScheduleWorkflow,
+  startGetScheduleByIdWorkflow
 } from "./client";
 import { cancelSubscription, scheduleWorkflow } from "./workflows";
 import {DBClient, DBConfig} from "./DBClient";
@@ -123,6 +124,16 @@ routes.delete("/api/schedules/:scheduleId", async function (req, res) {
   });
 
 //routes that use temporal to do CRUD operations start here
+routes.get("/temporal-api/schedules/:scheduleId", async function (req, res) {
+  const result = await startGetScheduleByIdWorkflow(req.params.scheduleId);
+  if(result == null)
+  {
+    return res.status(404).json({ message: "No schedules found" });
+  }
+  const obj = convertRow(result.rows[0]);
+  return res.json(obj);
+});
+
 routes.get("/temporal-api/schedules", async function (req, res) {
    const result =  await startGetAllSchedulesWorkflow();
    if(result == null)

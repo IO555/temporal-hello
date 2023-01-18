@@ -59,4 +59,16 @@ export async function UpdateSchedule(scheduleId:string, startDate:string, endDat
   return result;
 }
 
+export async function GetScheduleByContentId(contentId:string): Promise<ResultIterator |null>{
+  const client:DBClient = CreateClient();
+  const result = await client.GetScheduleByContentId(contentId);
+  return result;
+}
+
+export async function GetScheduleById(scheduleId:string): Promise<ResultIterator |null>{
+  const client:DBClient = CreateClient();
+  const result = await client.GetScheduleById(scheduleId);
+  return result;
+}
+
 

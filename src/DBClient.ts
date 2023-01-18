@@ -115,6 +115,29 @@ export class DBClient {
     return result;
   }
 
+  public async GetScheduleByContentId(id: string) {
+    const query = this.ReplacePlaceholders("SELECT * FROM GetScheduleByContentIdFunc(%);", id);
+    let result = null;
+    try{
+      await this.client.connect();
+       result = await this.client.query(query);
+       //console.log(result);
+    }
+    catch(error){
+      console.log(error);
+      return null;
+    }
+    finally{
+      await this.client.end();
+    }
+    if(result.status == 'SELECT 0')
+    {
+      return null;
+    }
+    return result;
+  }
+  
+
   private ReplacePlaceholders(str: string, ...params: any[]) {
     for (const param of params) str = str.replace("%", param);
     return str;
