@@ -17,6 +17,8 @@ run `npm run start-api`  and check the api-postman.json
 
  Create a database named "content" and add the tables-setup.sql tables and procedures..
 
+ Check out dev-environment folder for Postgres setup on Docker
+
 -------------------------------------------------------------------------------------------------------------
 
 

@@ -71,7 +71,7 @@ as $$
 begin
 RETURN QUERY SELECT * FROM Schedule;
 
-end;$$
+end$$;
 
 CREATE OR REPLACE FUNCTION GetScheduleByIdFunc(s_ID int) RETURNS TABLE(sch_ID int, ContentID int, StartTime timestamp,
                                                          EndTime timestamp)
@@ -80,8 +80,24 @@ as $$
 begin
 RETURN QUERY SELECT * FROM schedule WHERE scheduleID = s_ID;
 
-end;$$
+end$$;
 
+CREATE OR REPLACE FUNCTION GetScheduleBetweenDatesFunc(s_StartTime text, s_EndTime text) RETURNS TABLE(sch_ID int, r_ContentID int, r_StartTime timestamp,
+                                                         r_EndTime timestamp)
+language plpgsql
+as $$
+begin
+RETURN QUERY SELECT * FROM schedule WHERE startTime >= s_StartTime AND endTime <= s_EndTime;
 
+end$$
+
+CREATE OR REPLACE FUNCTION GetScheduleByContentIdFunc(c_ID int) RETURNS TABLE(sch_ID int, r_ContentID int, StartTime timestamp,
+                                                         EndTime timestamp)
+language plpgsql
+as $$
+begin
+RETURN QUERY SELECT * FROM schedule WHERE contentID = c_ID;
+
+end$$
 
 
