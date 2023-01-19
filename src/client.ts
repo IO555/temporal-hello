@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import { SubscriptionWorkflow, cancelSubscription,scheduleWorkflow, getAllSchedulesWorkflow, 
   updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow, GetScheduleByIdWorkflow } from './workflows';
 import { ResultIterator } from 'ts-postgres';
+import { WorkflowFailedError } from '@temporalio/client';
 
 export default async function run(param:string) {
   // Connect to the default Server location (localhost:7233)
@@ -81,7 +82,8 @@ export default async function run(param:string) {
     const handle = await client.start(GetScheduleByIdWorkflow,  {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
-      args:[id]
+      args:[id],
+      workflowRunTimeout:'10 seconds'
   });
     const result = await handle.result();
     return result;
@@ -93,9 +95,24 @@ export default async function run(param:string) {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
       args:[],
+      workflowRunTimeout:'10 seconds'
     });
-    const result = await handle.result();
-    return result;
+    try{
+      const result = await handle.result();
+      return result;
+    }
+    catch(err)
+    {
+      if(err instanceof WorkflowFailedError)
+      {
+        throw new Error('Temporal workflow failed: ' + err.message);
+      }
+      else
+      {
+        throw new Error('Error from temporal workflow: ' + err);
+      }
+    }
+    
   }
 
   export async function startUpdateScheduleWorkflow(id:string, beginDate:string, endDate:string, contentId:string):Promise<ResultIterator |null>{
@@ -105,6 +122,7 @@ export default async function run(param:string) {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
       args:[id, beginDate, endDate, contentId],
+      workflowRunTimeout:'10 seconds'
     });
     const result = await handle.result();
     return result;
@@ -117,6 +135,7 @@ export default async function run(param:string) {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
       args:[id],
+      workflowRunTimeout:'10 seconds'
     });
     const result = await handle.result();
     return result;
@@ -130,6 +149,7 @@ export default async function run(param:string) {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
       args:[startDate, endDate, contentID],
+      workflowRunTimeout:'10 seconds'
     });
     const result = await handle.result();
     return result;

@@ -23,7 +23,8 @@ const { sendWelcomeEmail, sendSubscriptionOverEmail, sendCancelSubscriptionEmail
   startToCloseTimeout: '1 minute',
 });
 
-const { saveScheduleToDB, getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule, GetScheduleById, GetScheduleByContentId} = proxyActivities<typeof activities>({startToCloseTimeout: '10 seconds'});
+const { saveScheduleToDB, getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule, GetScheduleById, GetScheduleByContentId} = proxyActivities<
+  typeof activities>({startToCloseTimeout: '10 seconds'});
 
 export const cancelSubscription = wf.defineSignal('cancelSignal');
 

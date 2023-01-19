@@ -8,14 +8,13 @@ export class DBClient {
   }
   public async GetAllSchedules(): Promise<ResultIterator | null> {
     let result = null;
-    await this.client.connect();
+    
     try {
+      await this.client.connect();
       const query = "SELECT * FROM GetAllSchedulesFunc();";
       result = this.client.query(query);
-    } catch (error) {
-      console.log(error);
-      return result;
-    } finally {
+    }
+    finally {
       await this.client.end();
     }
     return result;
@@ -37,10 +36,8 @@ export class DBClient {
       );
       //Waiting on the result (i.e., result iterator) returns the complete query result.
       result = await this.client.query(query);
-    } catch (error) {
-      console.log(error);
-      return null;
-    } finally {
+    }
+    finally {
       await this.client.end();
     }
     return result;
@@ -52,9 +49,10 @@ export class DBClient {
     startDate: string,
     endDate: string
   ): Promise<ResultIterator | null> {
-    await this.client.connect();
+    
     let result = null;
     try {
+      await this.client.connect();
       const query: string = this.ReplacePlaceholders(
         "CALL UpdateSchedule('%', '%', '%', '%', null);",
         scheduleId,
@@ -63,10 +61,8 @@ export class DBClient {
         endDate
       );
       result = await this.client.query(query);
-    } catch (error) {
-      console.log(error);
-      return null;
-    } finally {
+    }
+    finally {
       await this.client.end();
     }
     
@@ -76,18 +72,17 @@ export class DBClient {
   public async DeleteSchedule(
     scheduleId: string
   ): Promise<ResultIterator | null> {
-    await this.client.connect();
+    
     let result = null;
     try {
+      await this.client.connect();
       const query: string = this.ReplacePlaceholders(
         "CALL DeleteSchedule('%', null);",
         scheduleId
       );
       result = await this.client.query(query);
-    } catch (error) {
-      console.log(error);
-      return result;
-    } finally {
+    } 
+    finally {
       await this.client.end();
     }
     return result;
@@ -97,20 +92,15 @@ export class DBClient {
     const query = this.ReplacePlaceholders("SELECT * FROM GetScheduleByIdFunc(%);", id);
     let result = null;
     try{
-      await this.client.connect();
+       await this.client.connect();
        result = await this.client.query(query);
-       //console.log(result);
-    }
-    catch(error){
-      console.log(error);
-      return null;
     }
     finally{
       await this.client.end();
     }
     if(result.status == 'SELECT 0')
     {
-      return null;
+      result = null;
     }
     return result;
   }
@@ -121,18 +111,13 @@ export class DBClient {
     try{
       await this.client.connect();
        result = await this.client.query(query);
-       //console.log(result);
-    }
-    catch(error){
-      console.log(error);
-      return null;
     }
     finally{
       await this.client.end();
     }
     if(result.status == 'SELECT 0')
     {
-      return null;
+      result = null;
     }
     return result;
   }

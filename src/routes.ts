@@ -124,6 +124,7 @@ routes.delete("/api/schedules/:scheduleId", async function (req, res) {
   });
 
 //routes that use temporal to do CRUD operations start here
+//---------------------------------------------------------------------------------------------------------------------------
 routes.get("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const result = await startGetScheduleByIdWorkflow(req.params.scheduleId);
   if(result == null)
@@ -135,8 +136,15 @@ routes.get("/temporal-api/schedules/:scheduleId", async function (req, res) {
 });
 
 routes.get("/temporal-api/schedules", async function (req, res) {
-   const result =  await startGetAllSchedulesWorkflow();
-   if(result == null)
+  let result = null;
+  try{
+    result =  await startGetAllSchedulesWorkflow();
+  }
+  catch(err)
+  {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+  if(result == null)
       return res.status(404).json({ message: "No schedules found" });
    const schedules = convertRows(result.rows);
    return res.json(schedules);
@@ -150,7 +158,11 @@ routes.post("/temporal-api/schedules", async function (req, res) {
   const startDate: string = req.body.startTime;
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
-  const result = await startAddScheduleWorkflow(startDate, endDate, contentId);
+  let result = await startAddScheduleWorkflow(startDate, endDate, contentId);
+  if(result?.rows[0][0] == 0)
+  {
+    result = null;
+  }
   return result == null ? res.status(409).send("Could not add schedule"): res.status(201).send("Succefssfully added");
 });
 
@@ -163,14 +175,21 @@ routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const startDate: string = req.body.startTime;
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
-  const result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
+  let result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
+  if(result?.rows[0][0] == 0)
+  {
+    result = null;
+  }
   return result == null? res.status(404).send("Could not update"): res.status(204).send("Updated");
-  //TODO test these with postman
 });
 
 routes.delete("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const scheduleId: string = req.params.scheduleId;
-  const result = await startDeleteScheduleWorkflow(scheduleId);
+  let result = await startDeleteScheduleWorkflow(scheduleId);
+  if(result?.rows[0][0] == 0)
+  {
+    result = null;
+  }
   return result == null ? res.status(404).send("Could not delete"): res.status(204).send("Deleted");
 });
 
