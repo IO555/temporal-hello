@@ -11,7 +11,8 @@ import {
   startAddScheduleWorkflow,
   startUpdateScheduleWorkflow,
   startDeleteScheduleWorkflow,
-  startGetScheduleByIdWorkflow
+  startGetScheduleByIdWorkflow,
+  startGetSchedulesBetweenDatesWorkflow
 } from "./client";
 import { cancelSubscription, scheduleWorkflow } from "./workflows";
 import {DBClient, DBConfig} from "./DBClient";
@@ -123,7 +124,7 @@ routes.delete("/api/schedules/:scheduleId", async function (req, res) {
     return result == null ? res.status(404).send("Could not delete schedule"): res.status(204).send("Deleted successfully");
   });
 
-//routes that use temporal to do CRUD operations start here
+//routes that use temporal workflows start here
 //---------------------------------------------------------------------------------------------------------------------------
 routes.get("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const result = await startGetScheduleByIdWorkflow(req.params.scheduleId);
@@ -135,13 +136,25 @@ routes.get("/temporal-api/schedules/:scheduleId", async function (req, res) {
   return res.json(obj);
 });
 
-routes.get("/temporal-api/schedules", async function (req, res) {
+
+routes.get("/temporal-api/schedules/", async function (req, res) {
   let result = null;
+  const startTime = req.query.startTime;
+  const endTime = req.query.endTime;
+  console.log(startTime);
   try{
-    result =  await startGetAllSchedulesWorkflow();
+    if(startTime != null && endTime != null)
+    {
+      result = await startGetSchedulesBetweenDatesWorkflow(startTime.toString(), endTime.toString());
+    }
+    else
+    {
+      result =  await startGetAllSchedulesWorkflow();
+    }
   }
   catch(err)
   {
+    console.log(err);
     return res.status(500).json({ message: "Something went wrong" });
   }
   if(result == null)
@@ -158,11 +171,7 @@ routes.post("/temporal-api/schedules", async function (req, res) {
   const startDate: string = req.body.startTime;
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
-  let result = await startAddScheduleWorkflow(startDate, endDate, contentId);
-  if(result?.rows[0][0] == 0)
-  {
-    result = null;
-  }
+  const result = await startAddScheduleWorkflow(startDate, endDate, contentId);
   return result == null ? res.status(409).send("Could not add schedule"): res.status(201).send("Succefssfully added");
 });
 
@@ -175,23 +184,19 @@ routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const startDate: string = req.body.startTime;
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
-  let result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
-  if(result?.rows[0][0] == 0)
-  {
-    result = null;
-  }
+  const result = await startUpdateScheduleWorkflow(scheduleId, startDate, endDate, contentId, );
+  
   return result == null? res.status(404).send("Could not update"): res.status(204).send("Updated");
 });
 
 routes.delete("/temporal-api/schedules/:scheduleId", async function (req, res) {
   const scheduleId: string = req.params.scheduleId;
-  let result = await startDeleteScheduleWorkflow(scheduleId);
-  if(result?.rows[0][0] == 0)
-  {
-    result = null;
-  }
+  const result = await startDeleteScheduleWorkflow(scheduleId);
+  
   return result == null ? res.status(404).send("Could not delete"): res.status(204).send("Deleted");
 });
+
+
 
 export default routes;
 

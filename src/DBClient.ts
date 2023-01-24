@@ -1,6 +1,12 @@
 import { Client, Configuration, ResultIterator } from "ts-postgres";
 //import { ResultIterator } from "ts-postgres/dist/src/result";
 
+//DBClient represents a database client that can be used to execute queries against the database.
+//DBClient returns null if UpdateSchedule did not affect any rows
+//DBClient returns null if DeleteSchedule did not affect any rows
+//DBClient returns null if GetScheduleById did not return anything
+
+
 export class DBClient {
   private client: Client;
   constructor(DBConfig: Configuration) {
@@ -36,6 +42,10 @@ export class DBClient {
       );
       //Waiting on the result (i.e., result iterator) returns the complete query result.
       result = await this.client.query(query);
+      if(result?.rows[0][0] == 0)
+      {
+          result = null;
+      }
     }
     finally {
       await this.client.end();
@@ -61,6 +71,10 @@ export class DBClient {
         endDate
       );
       result = await this.client.query(query);
+      if(result?.rows[0][0] == 0)
+      {
+        result = null;
+      }
     }
     finally {
       await this.client.end();
@@ -81,6 +95,10 @@ export class DBClient {
         scheduleId
       );
       result = await this.client.query(query);
+      if(result?.rows[0][0] == 0)
+      {
+           result = null;
+      }
     } 
     finally {
       await this.client.end();
@@ -120,6 +138,20 @@ export class DBClient {
       result = null;
     }
     return result;
+  }
+
+  public async GetSchedulesBetweenDates(startDate: string, endDate: string) {
+      const query = this.ReplacePlaceholders("SELECT * FROM GetScheduleBetweenDatesFunc('%', '%');", startDate, endDate);
+      console.log(query);
+      let result = null;
+      try {
+          await this.client.connect();
+          result = await this.client.query(query);
+      }
+      finally {
+          await this.client.end();
+      }
+      return result;
   }
   
 

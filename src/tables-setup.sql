@@ -87,7 +87,8 @@ CREATE OR REPLACE FUNCTION GetScheduleBetweenDatesFunc(s_StartTime text, s_EndTi
 language plpgsql
 as $$
 begin
-RETURN QUERY SELECT * FROM schedule WHERE startTime >= s_StartTime AND endTime <= s_EndTime;
+RETURN QUERY SELECT * FROM schedule WHERE startTime >= TO_TIMESTAMP(s_StartTime, 'YYYY-MM-DD HH:MI:SS') AND endTime <= TO_TIMESTAMP(s_EndTime,
+  'YYYY-MM-DD HH:MI:SS');
 
 end$$
 

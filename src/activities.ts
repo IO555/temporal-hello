@@ -71,4 +71,11 @@ export async function GetScheduleById(scheduleId:string): Promise<ResultIterator
   return result;
 }
 
+export async function GetSchedulesBetweenDates(startDate:string, endDate:string): Promise<ResultIterator |null>{
+  console.log("here @activity")
+  const client:DBClient = CreateClient();
+  const result = await client.GetSchedulesBetweenDates(startDate, endDate);
+  return result;
+}
+
 

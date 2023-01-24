@@ -3,7 +3,8 @@ import { Connection, WorkflowClient } from '@temporalio/client';
 import { example } from './workflows';
 import { nanoid } from 'nanoid';
 import { SubscriptionWorkflow, cancelSubscription,scheduleWorkflow, getAllSchedulesWorkflow, 
-  updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow, GetScheduleByIdWorkflow } from './workflows';
+  updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow, GetScheduleByIdWorkflow, GetScheduleByContentIdWorkflow,
+  GetSchedulesBetweenDatesWorkflow } from './workflows';
 import { ResultIterator } from 'ts-postgres';
 import { WorkflowFailedError } from '@temporalio/client';
 
@@ -155,7 +156,33 @@ export default async function run(param:string) {
     return result;
   }
 
+  export async function startGetScheduleByContentIdWorkflow(contentId:string):Promise<ResultIterator |null>{
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    const handle = await client.start(GetScheduleByContentIdWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[contentId],
+      workflowRunTimeout:'10 seconds'
+  });
+    const result = await handle.result();
+    return result;
+  }
 
+  export async function startGetSchedulesBetweenDatesWorkflow(beginDate:string, endDate:string):Promise<ResultIterator |null>{
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    const handle = await client.start(GetSchedulesBetweenDatesWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[beginDate, endDate],
+      workflowRunTimeout:'10 seconds'
+  });
+    console.log("here @client");
+    console.log(beginDate, endDate);
+    const result = await handle.result();
+    return result;
+  }
 
 
 // @@@SNIPEND
