@@ -4,9 +4,6 @@ import { nextTick } from "process";
 import { validateDate } from "./validate-params";
 import { convertRow, convertRows } from "./dataTypeConverter";
 import {
-  startScheduleWorkflow,
-  startSubscriptionWorkflow,
-  cancelSubscriptionWorkflow,
   startGetAllSchedulesWorkflow,
   startAddScheduleWorkflow,
   startUpdateScheduleWorkflow,
@@ -14,7 +11,6 @@ import {
   startGetScheduleByIdWorkflow,
   startGetSchedulesBetweenDatesWorkflow
 } from "./client";
-import { cancelSubscription, scheduleWorkflow } from "./workflows";
 import {DBClient, DBConfig} from "./DBClient";
 
 const routes = Router();
@@ -24,31 +20,8 @@ function CreateClient(): DBClient {
   return new DBClient(config);
 }
 
-//simple demo routes to start workflows start here
 
-routes.post("/api/start", async function (req, res) {
-  try {
-    await startSubscriptionWorkflow();
-    return res.json({ message: "Subscription started" });
-  } catch (err) {
-    console.log(err);
-    return res.json({ message: "Subscription failed" });
-  }
-});
-
-routes.post("/api/cancel", async function (req, res) {
-  await cancelSubscriptionWorkflow();
-  return res.json({ message: "Subscription canceled" });
-});
-
-routes.post("/api/publish", async function (req, res) {
-  const startDate: string = req.body.startTime;
-  const endDate: string = req.body.endTime;
-  await startScheduleWorkflow(startDate, endDate);
-  return res.json({ message: "Schedule published" });
-});
-
-//API CRUD FUNCTIONS START HERE
+//API FUNCTIONS START HERE
 
 routes.get("/api/schedules", async function (req, res) {
   const client:DBClient = CreateClient();
@@ -62,7 +35,6 @@ routes.get("/api/schedules", async function (req, res) {
 });
 
 routes.get("/api/schedules/:id", async function (req, res) {
-  //TODO: Implement this
   const client:DBClient = CreateClient();
   const result = await client.GetScheduleById(req.params.id);
   if(result == null)
@@ -71,7 +43,6 @@ routes.get("/api/schedules/:id", async function (req, res) {
   }
   const obj = convertRow(result.rows[0]);
   return res.json(obj);
-  //on error return HTTPSTATUS: NOT FOUND
 });
 
 routes.post("/api/schedules", async function (req, res) {

@@ -8,51 +8,13 @@ import * as wf from '@temporalio/workflow';
 //import type { saveScheduleToDB, getAllSchedules } from './activities';
 import { ResultIterator } from 'ts-postgres';
 
-const { greet } = proxyActivities<typeof activities>({
-  startToCloseTimeout: '1 minute',
-});
 
-/** A workflow that simply calls an activity */
-export async function example(name: string): Promise<string> {
-  return await greet(name);
-}
-// @@@SNIPEND
 
-const { sendWelcomeEmail, sendSubscriptionOverEmail, sendCancelSubscriptionEmail } = proxyActivities<
-  typeof activities>({
-  startToCloseTimeout: '1 minute',
-});
-
-const { saveScheduleToDB, getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule, GetScheduleById, GetScheduleByContentId,
+const { getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule, GetScheduleById, GetScheduleByContentId,
   GetSchedulesBetweenDates} = proxyActivities<
   typeof activities>({startToCloseTimeout: '10 seconds'});
 
-export const cancelSubscription = wf.defineSignal('cancelSignal');
 
-export async function SubscriptionWorkflow(
-  email: string,
-  trialPeriod: string | number
-) {
-  // internal variable to track cancel state
-  let isCanceled = false;
-  wf.setHandler(cancelSubscription, () => void (isCanceled = true));
-  await sendWelcomeEmail(email);
-  await sleep(trialPeriod);
-  if (isCanceled) {
-    await sendCancelSubscriptionEmail();
-  } else {
-    await sendSubscriptionOverEmail(email);
-  }
-}
-
-export async function scheduleWorkflow(
-  beginDate: string,
-  endDate: string
-): Promise<string> 
-{
-    const result = await saveScheduleToDB(beginDate, endDate);
-    return result;
-}
 
 export async function getAllSchedulesWorkflow():Promise<ResultIterator | null>
 {
@@ -86,7 +48,6 @@ export async function GetScheduleByIdWorkflow(scheduleId:string):Promise<ResultI
 
 export async function GetSchedulesBetweenDatesWorkflow(startDate:string, endDate:string):Promise<ResultIterator | null>
 {
-  console.log("here @workflow");
   return await GetSchedulesBetweenDates(startDate, endDate);
 }
 
