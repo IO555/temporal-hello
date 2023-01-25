@@ -72,13 +72,13 @@ import { WorkflowFailedError } from '@temporalio/client';
     return result;
   }
 
-  export async function startGetScheduleByContentIdWorkflow(contentId:string):Promise<ResultIterator |null>{
+  export async function startGetScheduleByContentIdWorkflow(contentId:string, startDate:string, endDate:string):Promise<ResultIterator |null>{
     const connection = await Connection.connect();
     const client = new WorkflowClient({connection});
     const handle = await client.start(GetScheduleByContentIdWorkflow,  {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
-      args:[contentId],
+      args:[contentId, startDate, endDate],
       workflowRunTimeout:'10 seconds'
   });
     const result = await handle.result();

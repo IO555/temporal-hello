@@ -92,12 +92,13 @@ RETURN QUERY SELECT * FROM schedule WHERE startTime >= TO_TIMESTAMP(s_StartTime,
 
 end$$
 
-CREATE OR REPLACE FUNCTION GetScheduleByContentIdFunc(c_ID int) RETURNS TABLE(sch_ID int, r_ContentID int, StartTime timestamp,
-                                                         EndTime timestamp)
+CREATE OR REPLACE FUNCTION GetScheduleByContentIdFunc(c_ID int, s_StartTime text, s_EndTime text) RETURNS TABLE(sch_ID int, r_ContentID int, r_StartTime timestamp,
+                                                         r_EndTime timestamp)
 language plpgsql
 as $$
 begin
-RETURN QUERY SELECT * FROM schedule WHERE contentID = c_ID;
+RETURN QUERY SELECT * FROM schedule WHERE contentID = c_ID AND startTime >= TO_TIMESTAMP(s_StartTime, 'YYYY-MM-DD HH24:MI:SS') AND endTime <= TO_TIMESTAMP(s_EndTime,
+  'YYYY-MM-DD HH24:MI:SS');
 
 end$$
 

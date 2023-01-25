@@ -1,0 +1,437 @@
+{
+	"info": {
+		"_postman_id": "1f18a749-fbed-4b73-a971-f2ebbdbb3742",
+		"name": "PublishingAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14501013"
+	},
+	"item": [
+		{
+			"name": "AddTestSchedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"startTime\":\"2020-02-23 09:00:50\", \"endTime\": \"2024-03-24 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddTestSchedule 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"startTime\":\"2021-02-23 09:00:50\", \"endTime\": \"2025-03-24 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddScheduleWithInvalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"endTime\": \"2025-03-24 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddSchedule",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"startTime\":\"2022-02-23 09:00:00\", \"endTime\": \"2022-02-23 19:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/api/schedules",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"schedules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSchedules",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/api/schedules/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetScheduleById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/api/schedules/391231",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"schedules",
+						"391231"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateSchedule",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\": \"1\",\"startTime\":\"2022-01-01 00:00:00\",\"endTime\":\"2022-01-01 00:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8090/api/schedules/46",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"schedules",
+						"46"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteSchedule",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8090/api/schedules/39",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"schedules",
+						"39"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalGetSchedules",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalAddSchedule",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"startTime\":\"2022-02-23 09:00:50\", \"endTime\": \"2022-03-24 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalUpdateSchedule",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\": \"1\",\"startTime\":\"2025-01-24 19:00:00\",\"endTime\":\"2026-01-25 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/58",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						"58"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalDeleteSchedule",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/23",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						"23"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalGetScheduleById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/59",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						"59"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalGetSchedulesBetweenDates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/schedules/?startTime=2022-01-01 00:00:00&endTime=2024-04-01 11:00:00",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"schedules",
+						""
+					],
+					"query": [
+						{
+							"key": "startTime",
+							"value": "2022-01-01 00:00:00"
+						},
+						{
+							"key": "endTime",
+							"value": "2024-04-01 11:00:00"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalGetSchedulesByContentId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/?startTime=2022-02-23 09:00:00&endTime=2024-02-23 09:00:00&contentID=1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					],
+					"query": [
+						{
+							"key": "startTime",
+							"value": "2022-02-23 09:00:00"
+						},
+						{
+							"key": "endTime",
+							"value": "2024-02-23 09:00:00"
+						},
+						{
+							"key": "contentID",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

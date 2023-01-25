@@ -123,8 +123,8 @@ export class DBClient {
     return result;
   }
 
-  public async GetScheduleByContentId(id: string) {
-    const query = this.ReplacePlaceholders("SELECT * FROM GetScheduleByContentIdFunc(%);", id);
+  public async GetScheduleByContentId(id: string, startDate:string, endDate:string) {
+    const query = this.ReplacePlaceholders("SELECT * FROM GetScheduleByContentIdFunc(%, '%', '%');", id, startDate, endDate);
     let result = null;
     try{
       await this.client.connect();

@@ -39,9 +39,10 @@ export async function UpdateSchedule(scheduleId:string, startDate:string, endDat
   return result;
 }
 
-export async function GetScheduleByContentId(contentId:string): Promise<ResultIterator |null>{
+export async function GetScheduleByContentId(contentId:string, startDate:string, endDate:string): Promise<ResultIterator |null>{
+  console.log("here @activity")
   const client:DBClient = CreateClient();
-  const result = await client.GetScheduleByContentId(contentId);
+  const result = await client.GetScheduleByContentId(contentId, startDate, endDate);
   return result;
 }
 
@@ -52,7 +53,7 @@ export async function GetScheduleById(scheduleId:string): Promise<ResultIterator
 }
 
 export async function GetSchedulesBetweenDates(startDate:string, endDate:string): Promise<ResultIterator |null>{
-  console.log("here @activity")
+  
   const client:DBClient = CreateClient();
   const result = await client.GetSchedulesBetweenDates(startDate, endDate);
   return result;

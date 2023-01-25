@@ -36,9 +36,10 @@ export async function updateScheduleWorkflow(scheduleId:string, startDate:string
   return await UpdateSchedule(scheduleId, startDate, endDate, contentId);
 }
 
-export async function GetScheduleByContentIdWorkflow(contentId:string):Promise<ResultIterator | null>
+export async function GetScheduleByContentIdWorkflow(contentId:string, startDate:string, endDate:string):Promise<ResultIterator | null>
 {
-  return await GetScheduleByContentId(contentId);
+  console.log("here @workflow");
+  return await GetScheduleByContentId(contentId, startDate, endDate);
 }
 
 export async function GetScheduleByIdWorkflow(scheduleId:string):Promise<ResultIterator | null>

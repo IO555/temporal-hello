@@ -9,7 +9,8 @@ import {
   startUpdateScheduleWorkflow,
   startDeleteScheduleWorkflow,
   startGetScheduleByIdWorkflow,
-  startGetSchedulesBetweenDatesWorkflow
+  startGetSchedulesBetweenDatesWorkflow,
+  startGetScheduleByContentIdWorkflow
 } from "./client";
 import {DBClient, DBConfig} from "./DBClient";
 
@@ -21,7 +22,7 @@ function CreateClient(): DBClient {
 }
 
 
-//API FUNCTIONS START HERE
+//API functions that DO NOT use temporal start here---------------------------------------------------------
 
 routes.get("/api/schedules", async function (req, res) {
   const client:DBClient = CreateClient();
@@ -112,22 +113,27 @@ routes.get("/temporal-api/schedules/", async function (req, res) {
   let result = null;
   const startTime = req.query.startTime;
   const endTime = req.query.endTime;
-  console.log(startTime);
-  try{
-    if(startTime != null && endTime != null)
+  const contentID = req.query.contentID;
+    if(startTime == null  && endTime != null)
+    {
+      return res.status(400).json('Please provide both startTime and endTime');
+    }
+    if(startTime != null && endTime == null)
+    {
+      return res.status(400).json('Please provide both startTime and endTime');
+    }
+    else if(startTime != null && endTime != null && contentID == null)
     {
       result = await startGetSchedulesBetweenDatesWorkflow(startTime.toString(), endTime.toString());
+    }
+    else if(startTime != null && endTime != null && contentID != null)
+    {
+      result = await startGetScheduleByContentIdWorkflow(contentID.toString(), startTime.toString(), endTime.toString());
     }
     else
     {
       result =  await startGetAllSchedulesWorkflow();
     }
-  }
-  catch(err)
-  {
-    console.log(err);
-    return res.status(500).json({ message: "Something went wrong" });
-  }
   if(result == null)
       return res.status(404).json({ message: "No schedules found" });
    const schedules = convertRows(result.rows);
@@ -143,7 +149,7 @@ routes.post("/temporal-api/schedules", async function (req, res) {
   const endDate: string = req.body.endTime;
   const contentId: string = req.body.contentId;
   const result = await startAddScheduleWorkflow(startDate, endDate, contentId);
-  return result == null ? res.status(409).send("Could not add schedule"): res.status(201).send("Succefssfully added");
+  return result == null ? res.status(409).send("Could not add schedule"): res.status(201).send("Successfully added");
 });
 
 routes.put("/temporal-api/schedules/:scheduleId", async function (req, res) {
