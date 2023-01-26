@@ -130,10 +130,7 @@ routes.get("/temporal-api/schedules/", async function (req, res) {
     {
       result = await startGetScheduleByContentIdWorkflow(contentID.toString(), startTime.toString(), endTime.toString());
     }
-    else
-    {
-      result =  await startGetAllSchedulesWorkflow();
-    }
+    
   if(result == null)
       return res.status(404).json({ message: "No schedules found" });
    const schedules = convertRows(result.rows);
