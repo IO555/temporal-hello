@@ -10,7 +10,8 @@ import {
   startDeleteScheduleWorkflow,
   startGetScheduleByIdWorkflow,
   startGetSchedulesBetweenDatesWorkflow,
-  startGetScheduleByContentIdWorkflow
+  startGetSchedulesBetweenByContentIdWorkflow,
+  startGetSchedulesByContentIdWorkflow
 } from "./client";
 import {DBClient, DBConfig} from "./DBClient";
 
@@ -128,11 +129,15 @@ routes.get("/temporal-api/schedules/", async function (req, res) {
     }
     else if(startTime != null && endTime != null && contentID != null)
     {
-      result = await startGetScheduleByContentIdWorkflow(contentID.toString(), startTime.toString(), endTime.toString());
+      result = await startGetSchedulesBetweenByContentIdWorkflow(contentID.toString(), startTime.toString(), endTime.toString());
     }
     else if (startTime == null && endTime == null && contentID == null)
     {
       result =  await startGetAllSchedulesWorkflow();
+    }
+    else if (startTime == null && endTime == null && contentID != null)
+    {
+      result = await startGetSchedulesByContentIdWorkflow(contentID.toString());
     }
   if(result == null)
       return res.status(404).json({ message: "No schedules found" });

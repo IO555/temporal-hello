@@ -123,12 +123,28 @@ export class DBClient {
     return result;
   }
 
-  public async GetScheduleByContentId(id: string, startDate:string, endDate:string) {
-    const query = this.ReplacePlaceholders("SELECT * FROM GetScheduleByContentIdFunc(%, '%', '%');", id, startDate, endDate);
+  public async GetSchedulesBetweenByContentId(id: string, startDate:string, endDate:string) {
+    const query = this.ReplacePlaceholders("SELECT * FROM GetSchedulesBetweenByContentIdFunc(%, '%', '%');", id, startDate, endDate);
     let result = null;
     try{
-      await this.client.connect();
+       await this.client.connect();
        result = await this.client.query(query);
+    }
+    finally{
+      await this.client.end();
+    }
+    if(result.status == 'SELECT 0')
+    {
+      result = null;
+    }
+    return result;
+  }
+  public async GetSchedulesByContentId(id: string) {
+    const query = this.ReplacePlaceholders("SELECT * FROM GetSchedulesByContentIdFunc(%);", id);
+    let result = null;
+    try{
+       await this.client.connect();
+        result = await this.client.query(query);
     }
     finally{
       await this.client.end();

@@ -1,8 +1,8 @@
 // @@@SNIPSTART typescript-hello-client
 import { Connection, WorkflowClient } from '@temporalio/client';
 import { nanoid } from 'nanoid';
-import { getAllSchedulesWorkflow, updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow, GetScheduleByIdWorkflow, GetScheduleByContentIdWorkflow,
-         GetSchedulesBetweenDatesWorkflow } from './workflows';
+import { getAllSchedulesWorkflow, updateScheduleWorkflow, deleteScheduleWorkflow, addScheduleWorkflow, GetScheduleByIdWorkflow, GetSchedulesBetweenByContentIdWorkflow,
+         GetSchedulesBetweenDatesWorkflow, GetSchedulesByContentIdWorkflow } from './workflows';
 import { ResultIterator } from 'ts-postgres';
 import { WorkflowFailedError } from '@temporalio/client';
 
@@ -19,6 +19,20 @@ import { WorkflowFailedError } from '@temporalio/client';
     const result = await handle.result();
     return result;
   }
+  
+  export async function startGetSchedulesByContentIdWorkflow(cid:string): Promise<ResultIterator |null>{
+    const connection = await Connection.connect();
+    const client = new WorkflowClient({connection});
+    const handle = await client.start(GetSchedulesByContentIdWorkflow,  {
+      workflowId: 'business-meaningful-id',
+      taskQueue: 'tutorial',
+      args:[cid],
+      workflowRunTimeout:'10 seconds'
+    });
+    const result = await handle.result();
+    return result;
+  }
+
   export async function startGetAllSchedulesWorkflow():Promise<ResultIterator |null>{
     const connection = await Connection.connect();
     const client = new WorkflowClient({connection});
@@ -72,10 +86,10 @@ import { WorkflowFailedError } from '@temporalio/client';
     return result;
   }
 
-  export async function startGetScheduleByContentIdWorkflow(contentId:string, startDate:string, endDate:string):Promise<ResultIterator |null>{
+  export async function startGetSchedulesBetweenByContentIdWorkflow(contentId:string, startDate:string, endDate:string):Promise<ResultIterator |null>{
     const connection = await Connection.connect();
     const client = new WorkflowClient({connection});
-    const handle = await client.start(GetScheduleByContentIdWorkflow,  {
+    const handle = await client.start(GetSchedulesBetweenByContentIdWorkflow,  {
       workflowId: 'business-meaningful-id',
       taskQueue: 'tutorial',
       args:[contentId, startDate, endDate],

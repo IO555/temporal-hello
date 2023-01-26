@@ -10,8 +10,8 @@ import { ResultIterator } from 'ts-postgres';
 
 
 
-const { getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule, GetScheduleById, GetScheduleByContentId,
-  GetSchedulesBetweenDates} = proxyActivities<
+const { getAllSchedules, AddSchedule, DeleteSchedule, UpdateSchedule, GetScheduleById, GetSchedulesBetweenByContentId,
+  GetSchedulesBetweenDates, GetSchedulesByContentId} = proxyActivities<
   typeof activities>({startToCloseTimeout: '10 seconds'});
 
 
@@ -36,10 +36,9 @@ export async function updateScheduleWorkflow(scheduleId:string, startDate:string
   return await UpdateSchedule(scheduleId, startDate, endDate, contentId);
 }
 
-export async function GetScheduleByContentIdWorkflow(contentId:string, startDate:string, endDate:string):Promise<ResultIterator | null>
+export async function GetSchedulesBetweenByContentIdWorkflow(contentId:string, startDate:string, endDate:string):Promise<ResultIterator | null>
 {
-  console.log("here @workflow");
-  return await GetScheduleByContentId(contentId, startDate, endDate);
+  return await GetSchedulesBetweenByContentId(contentId, startDate, endDate);
 }
 
 export async function GetScheduleByIdWorkflow(scheduleId:string):Promise<ResultIterator | null>
@@ -50,6 +49,11 @@ export async function GetScheduleByIdWorkflow(scheduleId:string):Promise<ResultI
 export async function GetSchedulesBetweenDatesWorkflow(startDate:string, endDate:string):Promise<ResultIterator | null>
 {
   return await GetSchedulesBetweenDates(startDate, endDate);
+}
+
+export async function GetSchedulesByContentIdWorkflow(contentId:string):Promise<ResultIterator | null>
+{
+  return await GetSchedulesByContentId(contentId);
 }
 
 
