@@ -7,103 +7,6 @@
 	},
 	"item": [
 		{
-			"name": "AddTestSchedule",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"contentId\":\"1\",\"startTime\":\"2020-02-23 09:00:50\", \"endTime\": \"2024-03-24 09:00:00\"}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{host}}/temporal-api/schedules/",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"temporal-api",
-						"schedules",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "AddTestSchedule 2",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"contentId\":\"1\",\"startTime\":\"2021-02-23 09:00:50\", \"endTime\": \"2025-03-24 09:00:00\"}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{host}}/temporal-api/schedules/",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"temporal-api",
-						"schedules",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "AddScheduleWithInvalid",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"contentId\":\"1\",\"endTime\": \"2025-03-24 09:00:00\"}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{host}}/temporal-api/schedules/",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"temporal-api",
-						"schedules",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "AddSchedule",
 			"request": {
 				"method": "POST",
@@ -233,6 +136,126 @@
 			"response": []
 		},
 		{
+			"name": "TemporalAddTestSchedule",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"/*let delRequest = {\r",
+							"    url:'{{host}}/temporal-api/schedules/',\r",
+							"    method: 'DELETE'\r",
+							"}\r",
+							"let i = 0;\r",
+							"for(i = 0; i < 10; i++){\r",
+							"    delRequest.url =pm.environment.get('host')+'/temporal-api/schedules/'+ i.toString();\r",
+							"    pm.sendRequest(delRequest, function (err, response) {\r",
+							"    console.log(delRequest.url);\r",
+							"});\r",
+							"}\r",
+							"*/\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"startTime\":\"2020-02-23 09:00:50\", \"endTime\": \"2024-03-24 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalAddTestSchedule 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"startTime\":\"2021-02-23 09:00:50\", \"endTime\": \"2025-03-24 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalAddScheduleWithInvalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"contentId\":\"1\",\"endTime\": \"2025-03-24 09:00:00\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "TemporalGetSchedules",
 			"event": [
 				{
@@ -355,6 +378,25 @@
 		},
 		{
 			"name": "TemporalGetScheduleById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/temporal-api/schedules/59",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"temporal-api",
+						"schedules",
+						"59"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TemporalGetScheduleByIdWithInvalidID",
 			"request": {
 				"method": "GET",
 				"header": [],
